@@ -64,6 +64,7 @@ public class ArchivumModLocator extends AbstractJarFileLocator {
                 long size = Files.size(targetFile);
                 if(size == fileContents.length) {
                     // Probably correct
+                    LOGGER.debug("Skipped copying {} because it's already correct", targetFileName);
                     return Optional.of(targetFile);
                 }
             } catch(IOException e) {
