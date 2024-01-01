@@ -30,7 +30,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 public class ArchivumModLocator extends AbstractJarFileLocator {
-    private static final Logger LOGGER = LogManager.getLogger("Archivum");
+    static final Logger LOGGER = LogManager.getLogger("Archivum");
     private static final Path JAR_IN_JAR_CACHE = FMLPaths.GAMEDIR.get().resolve(".archivum").resolve("jarjar");
 
     @Override
@@ -71,10 +71,7 @@ public class ArchivumModLocator extends AbstractJarFileLocator {
             } catch(IOException e) {
                 // Assume it does not exist
             }
-            // We need to copy the mod to this path
-            try(OutputStream os = Files.newOutputStream(targetFile, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)) {
-                os.write(fileContents);
-            }
+            ArchivumModProcessor.processAndWrite(fileContents, targetFile, "testthing");
             return Optional.of(targetFile);
         } catch(IOException e) {
             LOGGER.error("Error reading jar '{}'", path, e);
@@ -122,6 +119,15 @@ public class ArchivumModLocator extends AbstractJarFileLocator {
             }
             return manifest;
         });
+    }
+
+    @Override
+    public Path findPath(IModFile modFile, String... pathComponents) {
+        Path path = super.findPath(modFile, pathComponents);
+        if(pathComponents.length == 2 && Objects.equals(pathComponents[0], "META-INF") && Objects.equals(pathComponents[1], "mods.toml") && !Files.exists(path)) {
+            // Fabricate a mods.toml
+        }
+        return path;
     }
 
     @Override
