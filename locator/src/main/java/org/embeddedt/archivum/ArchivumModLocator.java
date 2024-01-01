@@ -35,6 +35,7 @@ public class ArchivumModLocator extends AbstractJarFileLocator {
 
     @Override
     public List<IModFile> scanMods() {
+        LOGGER.info("Scanning for JiJ mods...");
         try(Stream<Path> modJars = Files.list(FMLPaths.MODSDIR.get())) {
             if(!Files.exists(JAR_IN_JAR_CACHE))
                 Files.createDirectories(JAR_IN_JAR_CACHE);
@@ -116,6 +117,7 @@ public class ArchivumModLocator extends AbstractJarFileLocator {
             String type = manifest.getMainAttributes().getValue(ModFile.TYPE);
             if(type != null && type.equals("GAMELIBRARY")) {
                 // Need to make it LIBRARY for 1.16
+                LOGGER.warn("'{}' is marked as GAMELIBRARY, loading as LIBRARY instead", file);
                 manifest.getMainAttributes().put(ModFile.TYPE, "LIBRARY");
             }
             return manifest;
